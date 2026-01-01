@@ -375,7 +375,6 @@ body {
     min-height: 28px;
   }
 
-  /* ---- Mobile video cards horizontal layout ---- */
   .video-grid {
     display: flex !important;
     flex-direction: column;
@@ -386,16 +385,16 @@ body {
 
   .video-card {
     display: flex !important;
-    flex-direction: row;
-    gap: 10px;
-    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+    /* align-items: flex-start; */
     padding: 6px 0;
     border-bottom: 1px solid #eee;
   }
 
   .thumbnail {
-    width: 120px; /* fixed width for thumbnail */
-    height: 68px; /* maintain 16:9 ratio */
+    width: 120px; 
+    height: 68px;
     object-fit: cover;
     flex-shrink: 0;
     border-radius: 4px;
@@ -405,7 +404,7 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    flex: 1; /* take remaining space */
+    flex: 1; 
   }
 
   .title {
@@ -417,7 +416,7 @@ body {
 
   .meta-line {
     display: flex !important;
-    flex-direction: column; 
+    flex-direction: row; 
     gap: 2px; 
     font-size: 12px;
     color: #666;
