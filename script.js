@@ -102,8 +102,7 @@ async function fetchVideos() {
   if (state.year !== "ALL") {
     videos = videos.filter(
       (v) =>
-        v.publishedAt &&
-        new Date(v.publishedAt).getFullYear() == state.year
+        v.publishedAt && new Date(v.publishedAt).getFullYear() == state.year
     );
   }
 
@@ -176,15 +175,17 @@ function renderVideos() {
     const time = v.publishedAt ? timeAgo(v.publishedAt) : "";
 
     div.innerHTML = `
-      <img class="thumbnail" src="${img}" />
-      <div class="title">${v.title}</div>
+  <img class="thumbnail" src="${img}" />
+  <div class="video-info">
+    <div class="title">${v.title}</div>
+    <div class="meta-line">
+      <span>${formatViews(v.viewCount)} views</span>
+      <span class="dot"></span>
+      <span>${time}</span>
+    </div>
+  </div>
+`;
 
-      <div class="meta-line">
-        <span>${formatViews(v.viewCount)} views</span>
-        <span class="dot"></span>
-        <span>${time}</span>
-      </div>
-    `;
     div.appendChild(tagsContainer);
 
     grid.appendChild(div);
@@ -208,9 +209,9 @@ document.querySelectorAll("[data-sort]").forEach((btn) => {
 });
 
 function setActive(btn, selector) {
-  document.querySelectorAll(selector).forEach((b) =>
-    b.classList.remove("active")
-  );
+  document
+    .querySelectorAll(selector)
+    .forEach((b) => b.classList.remove("active"));
   btn.classList.add("active");
 }
 
@@ -222,7 +223,7 @@ const container = document.querySelector(".categories-container");
 const leftBtn = document.querySelector(".cat-scroll-btn.left");
 const rightBtn = document.querySelector(".cat-scroll-btn.right");
 
-const scrollAmount = 200; 
+const scrollAmount = 200;
 
 leftBtn.addEventListener("click", () => {
   categories.scrollBy({ left: -scrollAmount, behavior: "smooth" });
@@ -237,7 +238,7 @@ function updateScrollButtons() {
   const scrollWidth = categories.scrollWidth;
   const clientWidth = categories.clientWidth;
 
-  const atStart = scrollLeft <= 1; 
+  const atStart = scrollLeft <= 1;
   const atEnd = scrollLeft + clientWidth >= scrollWidth - 1;
 
   if (container.dataset.hover === "true") {

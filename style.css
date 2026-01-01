@@ -375,6 +375,7 @@ body {
     min-height: 28px;
   }
 
+  
   .video-grid {
     display: flex !important;
     flex-direction: column;
@@ -385,16 +386,16 @@ body {
 
   .video-card {
     display: flex !important;
-    flex-direction: column;
-    gap: 6px;
-    /* align-items: flex-start; */
+    flex-direction: row;
+    gap: 8px;
+    align-items: flex-start;
     padding: 6px 0;
     border-bottom: 1px solid #eee;
   }
 
   .thumbnail {
-    width: 120px; 
-    height: 68px;
+    width: 120px;
+    height: 68px; 
     object-fit: cover;
     flex-shrink: 0;
     border-radius: 4px;
@@ -413,7 +414,6 @@ body {
     margin-bottom: 4px;
     line-height: 1.2;
   }
-
   .meta-line {
     display: flex !important;
     flex-direction: row; 
