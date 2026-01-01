@@ -1,2 +1,10 @@
-# YouTube-like-Video-Browser.github.io
-YouTube-like Video Browser is a responsive web app fetching videos from the Acharya Prashant API. Supports filtering by category, language, year, and sorting by views or latest. Displays thumbnails, titles, tags, view counts, and relative publish time.
+# YouTube-like Video Browser
+
+A responsive web application that lets users explore videos dynamically fetched from the Acharya Prashant API. It supports multi-level filtering and sorting by category, language, year, and view count. Videos are displayed in a responsive grid with thumbnails, titles, tags, formatted view counts, and relative publish time.
+
+🚀 **Live Demo:** [https://Gunj-patel.github.io/](https://Gunj-patel.github.io/)
+
+## Author
+
+**Gunj Patel**  
+GitHub: [https://github.com/Gunj-patel](https://github.com/Gunj-patel)
