@@ -342,13 +342,17 @@ body {
     margin: 12px 0;
     flex-wrap: nowrap;
     overflow-x: auto;
-    gap: 6px;
+    gap: 0px;
     padding-left: 4px;
   }
 
   .filters button {
     font-size: 13px;
     padding: 5px 10px;
+    border-radius: 0;
+  }
+   .filters button + button {
+    margin-left: -1px; 
   }
 
   .categories {
