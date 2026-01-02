@@ -319,7 +319,6 @@ body {
   border-radius: 50%;
 }
 @media screen and (max-width: 768px) {
-
   body {
     margin: 0;
     background: #fff;
@@ -337,6 +336,7 @@ body {
     margin: 0;
   }
 
+  /* Filters */
   .filters {
     align-self: flex-start;
     margin: 12px 0;
@@ -351,12 +351,14 @@ body {
     padding: 5px 10px;
     border-radius: 0;
   }
-   .filters button + button {
+
+  .filters button + button {
     margin-left: -1px; 
   }
+
   .filters button[data-lang="HINDI"] {
-  font-size: 11.3px;
-}
+    font-size: 11.3px;
+  }
 
   .categories {
     margin: 0;
@@ -369,19 +371,17 @@ body {
     display: none !important;
   }
 
+
   .sort-bar {
     flex-direction: row;
     padding: 8px 12px;
     justify-content: flex-start;
     gap: 6px;
     overflow-x: auto;
-    overflow-x: visible !important; 
+    overflow-y: visible !important;
     position: relative;             
     z-index: 1000;  
   }
-  .sort-bar select {
-    position: relative;  
-    z-index: 1001;       
 
   .sort-bar button,
   .sort-bar select {
@@ -390,9 +390,88 @@ body {
     min-height: 28px;
   }
 
-  
+  .sort-bar select {
+    position: relative;  
+    z-index: 1001;
+  }
+
+  /* Year Dropdown */
+  .year-dropdown {
+    position: relative;
+    display: inline-block;
+    margin-left: auto;
+  }
+
+  .year-btn {
+    position: relative;
+    z-index: 10001;
+    min-width: 90px;
+    padding: 6px 10px;
+    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+  }
+
+  .year-menu {
+    position: fixed; 
+    top: 56px; 
+    right: 12px;
+    min-width: 120px;
+    max-width: 90vw;
+    max-height: 260px;
+    overflow-y: auto;
+    background: #1f2022;
+    border: 1px solid #1f2022;
+    border-radius: 4px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+    display: none;
+    z-index: 10000;
+  }
+
+  .year-menu.show {
+    display: block;
+  }
+
+  .year-menu div {
+    padding: 10px 16px;
+    cursor: pointer;
+    white-space: nowrap;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #e2e5e8;
+    border-bottom: 1px solid rgba(255,255,255,0.15);
+    transition: background 0.2s ease;
+  }
+
+  .year-menu div:hover {
+    background: #333;
+  }
+
+  .year-menu div.active {
+    background: #404040;
+    color: #fff;
+    font-weight: bold;
+  }
+
+  .year-menu::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .year-menu::-webkit-scrollbar-thumb {
+    background-color: #555;
+    border-radius: 4px;
+  }
+
+  .year-menu::-webkit-scrollbar-track {
+    background: #1f2022;
+  }
+
+
   .video-grid {
-    display: flex !important;
+    display: flex;
     flex-direction: column;
     gap: 12px;
     padding: 12px;
@@ -400,17 +479,17 @@ body {
   }
 
   .video-card {
-    display: flex !important;
+    display: flex;
     flex-direction: row;
-    gap: 8px;
+    gap: 12px;
     align-items: flex-start;
     padding: 6px 0;
     border-bottom: 1px solid #eee;
   }
 
   .thumbnail {
-    width: 120px;
-    height: 68px; 
+    width: 168px;
+    height: 94px;
     object-fit: cover;
     flex-shrink: 0;
     border-radius: 4px;
@@ -420,27 +499,33 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    flex: 1; 
-    min-width: 0; 
+    flex: 1;
+    min-width: 0;
   }
 
   .title {
     font-size: 14px;
-    font-weight: 600;
-    margin-bottom: 4px;
+    font-weight: 500;
     line-height: 1.2;
+    margin-bottom: 4px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
+
   .meta-line {
-    display: flex !important;
-    flex-direction: row; 
-    gap: 2px; 
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
     font-size: 12px;
     color: #666;
     margin-top: 4px;
+    flex-wrap: wrap;
   }
-  
-  
+
   .tags-container {
-    display: none;
+    display: none; 
   }
-}}
+}
