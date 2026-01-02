@@ -354,6 +354,9 @@ body {
    .filters button + button {
     margin-left: -1px; 
   }
+  .filters button[data-lang="HINDI"] {
+  font-size: 11.3px;
+}
 
   .categories {
     margin: 0;
@@ -372,7 +375,13 @@ body {
     justify-content: flex-start;
     gap: 6px;
     overflow-x: auto;
+    overflow-x: visible !important; 
+    position: relative;             
+    z-index: 1000;  
   }
+  .sort-bar select {
+    position: relative;  
+    z-index: 1001;       
 
   .sort-bar button,
   .sort-bar select {
@@ -434,4 +443,4 @@ body {
   .tags-container {
     display: none;
   }
-}
+}}
