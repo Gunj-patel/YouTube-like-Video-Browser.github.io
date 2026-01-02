@@ -2,14 +2,13 @@ const CATEGORY_API = "https://acharyaprashant.org/api/v2/uni/category";
 const VIDEO_API = "https://acharyaprashant.org/api/v2/uni/yt";
 
 let videos = [];
+let visibleVideos = [];
 
 const state = {
   language: "ALL",
   category: "ALL",
   sort: "latest",
   year: "ALL",
-  limit: 30,
-  offset: 0,
 };
 
 const yearBtn = document.getElementById("yearBtn");
@@ -21,15 +20,13 @@ for (let y = 2025; y >= 2011; y--) years.push(y);
 years.forEach((y) => {
   const div = document.createElement("div");
   div.textContent = y === "ALL" ? "All" : y;
-
   div.onclick = () => {
     state.year = y;
     yearBtn.textContent = y === "ALL" ? "Year" : y;
     yearBtn.classList.remove("active");
     yearMenu.classList.remove("show");
-    fetchVideos();
+    applyClientSideFilters();
   };
-
   yearMenu.appendChild(div);
 });
 
@@ -53,39 +50,31 @@ async function fetchCategories() {
 
   const allBtn = document.createElement("button");
   allBtn.textContent = "All Videos";
-  allBtn.dataset.cat = "ALL";
   allBtn.classList.add("active");
-
   allBtn.onclick = () => {
     state.category = "ALL";
-    state.offset = 0;
     setActive(allBtn, ".categories button");
     fetchVideos();
   };
-
   container.appendChild(allBtn);
 
   data.forEach((cat) => {
     const btn = document.createElement("button");
     btn.textContent = cat.title.english;
-    btn.dataset.cat = cat.id;
-
     btn.onclick = () => {
       state.category = cat.id;
-      state.offset = 0;
       setActive(btn, ".categories button");
       fetchVideos();
     };
-
     container.appendChild(btn);
   });
 }
 
 async function fetchVideos() {
   const params = new URLSearchParams({
-    limit: state.limit,
-    offset: state.offset,
-    orderBy: state.sort === "latest" ? 1 : state.sort === "views" ? 2 : 3,
+    limit: 30,
+    offset: 0,
+    orderBy: 1,
   });
 
   if (state.category !== "ALL") params.append("categoryId", state.category);
@@ -96,100 +85,93 @@ async function fetchVideos() {
   const json = await res.json();
 
   videos = json.data || [];
+  applyClientSideFilters();
+}
 
-  if (videos.length > 50) videos = videos.slice(0, 50);
-
+function applyClientSideFilters() {
+  let list = [...videos];
   if (state.year !== "ALL") {
-    videos = videos.filter(
+    list = list.filter(
       (v) =>
         v.publishedAt && new Date(v.publishedAt).getFullYear() == state.year
     );
   }
-
+  if (state.sort === "views") {
+    list.sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0));
+  }
+  if (state.sort === "oldest") {
+    list.sort((a, b) => new Date(a.publishedAt) - new Date(b.publishedAt));
+  }
+  visibleVideos = list;
   renderVideos();
-}
-
-function formatViews(count) {
-  if (!count || count < 1000) return count || 0;
-
-  if (count < 1_000_000) {
-    return `${(count / 1000).toFixed(1).replace(/\.0$/, "")}K`;
-  }
-
-  return `${(count / 1_000_000).toFixed(1).replace(/\.0$/, "")}M`;
-}
-
-function timeAgo(dateString) {
-  const now = new Date();
-  const past = new Date(dateString);
-
-  const diffMs = now - past;
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-  const diffMonths = Math.floor(diffDays / 30);
-  const diffYears = Math.floor(diffDays / 365);
-
-  if (diffYears > 0) {
-    return `${diffYears} year${diffYears > 1 ? "s" : ""} ago`;
-  }
-
-  if (diffMonths > 0) {
-    return `${diffMonths} month${diffMonths > 1 ? "s" : ""} ago`;
-  }
-
-  return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
 }
 
 function renderVideos() {
   const grid = document.getElementById("videoGrid");
   grid.innerHTML = "";
 
-  videos.forEach((v) => {
+  visibleVideos.forEach((v) => {
     const img =
       v.video?.thumbnailURL ||
       "https://via.placeholder.com/300x140?text=No+Image";
+    const time = v.publishedAt ? timeAgo(v.publishedAt) : "";
 
     const div = document.createElement("div");
     div.className = "video-card";
-
-    const tagsContainer = document.createElement("div");
-    tagsContainer.className = "tags-container";
-
-    if (v.tags && v.tags.length > 0) {
-      const firstTwo = v.tags.slice(0, 2);
-      firstTwo.forEach((tag) => {
-        const span = document.createElement("span");
-        span.className = "tag-box";
-        span.textContent = tag;
-        tagsContainer.appendChild(span);
-      });
-
-      const remaining = v.tags.length - 2;
-      if (remaining > 0) {
-        const span = document.createElement("span");
-        span.className = "tag-box";
-        span.textContent = `+${remaining}`;
-        tagsContainer.appendChild(span);
-      }
-    }
-
-    const time = v.publishedAt ? timeAgo(v.publishedAt) : "";
-
     div.innerHTML = `
-  <img class="thumbnail" src="${img}" />
-  <div class="video-info">
-    <div class="title">${v.title}</div>
-    <div class="meta-line">
-      <span>${formatViews(v.viewCount)} views</span>
-      <span class="dot"></span>
-      <span>${time}</span>
-    </div>
-  </div>
-`;
+      <img class="thumbnail" src="${img}" />
+      <div class="video-info">
+        <div class="title">${v.title}</div>
+        <div class="meta-line">
+          <span>${formatViews(v.viewCount)} views</span>
+          <span class="dot"></span>
+          <span>${time}</span>
+        </div>
+      </div>
+    `;
 
-    div.appendChild(tagsContainer);
+    if (v.tags && v.tags.length) {
+      const tags = document.createElement("div");
+      tags.className = "tags-container";
+      v.tags.slice(0, 2).forEach((t) => {
+        const span = document.createElement("span");
+        span.className = "tag-box";
+        span.textContent = t;
+        tags.appendChild(span);
+      });
+      if (v.tags.length > 2) {
+        const more = document.createElement("span");
+        more.className = "tag-box";
+        more.textContent = `+${v.tags.length - 2}`;
+        tags.appendChild(more);
+      }
+      div.appendChild(tags);
+    }
 
     grid.appendChild(div);
   });
+}
+
+function formatViews(count) {
+  if (!count || count < 1000) return count || 0;
+  if (count < 1_000_000)
+    return `${(count / 1000).toFixed(1).replace(/\.0$/, "")}K`;
+  return `${(count / 1_000_000).toFixed(1).replace(/\.0$/, "")}M`;
+}
+
+function timeAgo(dateString) {
+  const diff = Date.now() - new Date(dateString);
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  if (days >= 365) return `${Math.floor(days / 365)} years ago`;
+  if (days >= 30) return `${Math.floor(days / 30)} months ago`;
+  return `${days} days ago`;
+}
+
+function setActive(btn, selector) {
+  document
+    .querySelectorAll(selector)
+    .forEach((b) => b.classList.remove("active"));
+  btn.classList.add("active");
 }
 
 document.querySelectorAll("[data-lang]").forEach((btn) => {
@@ -204,64 +186,18 @@ document.querySelectorAll("[data-sort]").forEach((btn) => {
   btn.onclick = () => {
     state.sort = btn.dataset.sort;
     setActive(btn, "[data-sort]");
-    fetchVideos();
+    applyClientSideFilters();
   };
 });
-
-function setActive(btn, selector) {
-  document
-    .querySelectorAll(selector)
-    .forEach((b) => b.classList.remove("active"));
-  btn.classList.add("active");
-}
-
-fetchCategories();
-fetchVideos();
 
 const categories = document.querySelector(".categories");
 const container = document.querySelector(".categories-container");
 const leftBtn = document.querySelector(".cat-scroll-btn.left");
 const rightBtn = document.querySelector(".cat-scroll-btn.right");
 
-const scrollAmount = 200;
+leftBtn.onclick = () => categories.scrollBy({ left: -200, behavior: "smooth" });
 
-leftBtn.addEventListener("click", () => {
-  categories.scrollBy({ left: -scrollAmount, behavior: "smooth" });
-});
+rightBtn.onclick = () => categories.scrollBy({ left: 200, behavior: "smooth" });
 
-rightBtn.addEventListener("click", () => {
-  categories.scrollBy({ left: scrollAmount, behavior: "smooth" });
-});
-
-function updateScrollButtons() {
-  const scrollLeft = categories.scrollLeft;
-  const scrollWidth = categories.scrollWidth;
-  const clientWidth = categories.clientWidth;
-
-  const atStart = scrollLeft <= 1;
-  const atEnd = scrollLeft + clientWidth >= scrollWidth - 1;
-
-  if (container.dataset.hover === "true") {
-    leftBtn.style.display = atStart ? "none" : "block";
-    rightBtn.style.display = atEnd ? "none" : "block";
-  } else {
-    leftBtn.style.display = "none";
-    rightBtn.style.display = "none";
-  }
-}
-
-categories.addEventListener("scroll", updateScrollButtons);
-
-window.addEventListener("resize", updateScrollButtons);
-
-container.addEventListener("mouseenter", () => {
-  container.dataset.hover = "true";
-  updateScrollButtons();
-});
-
-container.addEventListener("mouseleave", () => {
-  container.dataset.hover = "false";
-  updateScrollButtons();
-});
-
-updateScrollButtons();
+fetchCategories();
+fetchVideos();
